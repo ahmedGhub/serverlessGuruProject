@@ -1,0 +1,65 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: boniean
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: books-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: serverlessUser
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:Scan
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: !GetAtt BooksTable.Arn
+
+functions:
+  createBook:
+    handler: handler.createBook
+    events:
+      - http:
+          path: books
+          method: post
+  
+  getBook:
+    handler: handler.getBook
+    events:
+      - http:
+          path: books/{id}
+          method: get
+
+  updateBook:
+    handler: handler.updateBook
+    events:
+      - http:
+          path: books/{id}
+          method: put
+
+  deleteBook:
+    handler: handler.deleteBook
+    events:
+      - http:
+          path: books/{id}
+          method: delete
+
+resources:
+  Resources:
+    BooksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Books
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PROVISIONED  
+        ProvisionedThroughput:  
+          ReadCapacityUnits: 5 
+          WriteCapacityUnits: 5  
