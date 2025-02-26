@@ -4,6 +4,7 @@
 # app: serverlessguru
 # "service" is the name of this project. This will also be added to your AWS resource names.
 service: books-api
+org: null
 
 provider:
   name: aws
