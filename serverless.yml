@@ -3,7 +3,7 @@ org: boniean
 # "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: serverlessguru
 # "service" is the name of this project. This will also be added to your AWS resource names.
-service: Guru-books-api
+service: serverlessGuru-books-api
 provider:
   name: aws
   runtime: nodejs18.x
@@ -60,7 +60,29 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-        BillingMode: PROVISIONED  
-        ProvisionedThroughput:  
-          ReadCapacityUnits: 5 
-          WriteCapacityUnits: 5  
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+    
+    ServerlessApiGatewayCloudWatchRole: 
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 'sts:AssumeRole'
+              Principal:
+                Service: 'apigateway.amazonaws.com'
+        Policies:
+          - PolicyName: ServerlessApiGatewayCloudWatchPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 'logs:CreateLogGroup'
+                    - 'logs:CreateLogStream'
+                    - 'logs:PutLogEvents'
+                  Resource: arn:aws:logs:${opt:region, 'us-east-1'}:${aws:accountId}:log-group:/aws/api-gateway/*
