@@ -21,7 +21,7 @@ jobs:
     - run: npm ci
     - name: Remove existing stack (if applicable)
       run: |
-        serverless remove  --region us-east-1
+        sls remove  
     - name: Deploy with Serverless
       uses: serverless/github-action@v3.2
       with:
