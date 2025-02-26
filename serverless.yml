@@ -3,11 +3,14 @@ org: boniean
 # "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: serverlessguru
 # "service" is the name of this project. This will also be added to your AWS resource names.
-service: books-api
+service: serverlessGuru-books-api
 provider:
   name: aws
   runtime: nodejs18.x
-  region: us-east-1
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'prod'}
+  logs:
+    restApi: false
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -59,7 +62,8 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-        BillingMode: PROVISIONED  
-        ProvisionedThroughput:  
-          ReadCapacityUnits: 5 
-          WriteCapacityUnits: 5  
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+    
