@@ -1,0 +1,40 @@
+name: Deploy to Dev
+
+on:
+  pull_request:
+    branches:
+      - '*'
+    # Triggers on any branch that is not 'main' (which is excluded in the next steps)
+
+jobs:
+  deploy-to-dev:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+
+    - run: npm ci
+
+    - name: Set Deployment Stage and Region
+      run: |
+        # Check if the branch is 'main' or not
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "Skipping deployment for main branch"
+          exit 0  # Skip deployment for main branch
+        fi
+        echo "Deploying to dev branch: ${{ github.ref }}"
+        echo "DEPLOY_STAGE=dev" >> $GITHUB_ENV
+        echo "DEPLOY_REGION=us-east-2" >> $GITHUB_ENV
+
+    - name: Deploy to Dev with Serverless
+      uses: serverless/github-action@v3.2
+      with:
+        args: deploy --stage ${{ env.DEPLOY_STAGE }} --region ${{ env.DEPLOY_REGION }} --verbose
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
