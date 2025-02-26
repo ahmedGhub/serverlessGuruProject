@@ -7,7 +7,8 @@ service: books-api
 provider:
   name: aws
   runtime: nodejs18.x
-  region: us-east-1
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'prod'}
   iamRoleStatements:
     - Effect: Allow
       Action:
